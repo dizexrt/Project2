@@ -1,5 +1,8 @@
 using System;
 using ProductOptions;
+using ExchangeProgram;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ExchangeProgram
 {
@@ -203,6 +206,7 @@ namespace ExchangeProgram
 					Console.WriteLine("=======================================");
 					Console.WriteLine($"You get money : {money} Baht");
 					user.Point -= money*50; //remove point thta exchanged
+					Database.Update(user);
 					Console.WriteLine($"You have {user.Point} point left"); //show point left
 					Console.WriteLine("=======================================");
 
@@ -268,6 +272,7 @@ namespace ExchangeProgram
 						{
 							//add point after confirmed amount of product
 							user.Point += n*point;
+							Database.Update(user);
 							Console.WriteLine($"Now your point is {user.Point}");
 							break;
 						}
@@ -440,7 +445,6 @@ namespace ExchangeProgram
 
 						//add new user to database
 						AddTodatabase(new_user);
-
 						return true;
 					}
 				}
@@ -467,7 +471,89 @@ namespace ExchangeProgram
 
 			//apply new array to database
 			this.database = newarr;
+
+			//add new user to real db
+			Database.Add(new_user);
+		}
+
+		public void StreamDB()
+		{
+			this.database = Database.Import();
 		}
 
 	}
+}
+
+public class Database
+{
+
+	public static void Add(User user)
+	{
+		using StreamWriter db = new (@"Database/database.txt", append:true);
+		string[] UserInformation = {user.Name, user.Password, user.Point.ToString()};
+		string data = String.Join("/", UserInformation);
+		db.WriteLine(data);
+	}
+
+	public static User[] Import()
+	{
+		int line = 0;
+		foreach (string data in File.ReadLines(@"Database/database.txt"))
+		{
+			line ++;
+		}
+
+		User[] db = new User[line];
+
+		line = 0;
+		foreach (string data in File.ReadLines(@"Database/database.txt"))
+		{
+			string[] Info = data.Split("/");
+			
+			User user = new User();
+			user.Name = Info[0];
+			user.Password = Info[1];
+			user.Point = int.Parse(Info[2]);
+
+			db[line] = user;
+			line++;
+		}
+
+		if (db.Length == 0) return new User[0];
+
+		return db;
+	}
+
+	public static void Update(User user)
+	{
+		File.WriteAllText(@"Database/update.txt", String.Empty);
+		using StreamWriter update = new (@"Database/update.txt");
+
+		foreach (string data in File.ReadLines(@"Database/database.txt"))
+		{
+			if (data.StartsWith(user.Name+"/"))
+			{
+				string[] Info = {user.Name, user.Password, user.Point.ToString()};
+				string updatedata = String.Join("/", Info);
+				update.WriteLine(updatedata);
+				continue;
+			}
+
+			update.WriteLine(data);
+		}
+
+		Task.Run (() => Update());
+	}
+
+	public static async Task Update()
+	{
+		await File.WriteAllTextAsync(@"Database/database.txt", String.Empty);
+		using StreamWriter db = new (@"Database/database.txt");
+
+		foreach (string data in File.ReadLines(@"Database/update.txt"))
+		{
+			await db.WriteLineAsync(data);
+		}
+	}
+
 }

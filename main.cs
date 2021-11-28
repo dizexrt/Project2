@@ -11,6 +11,7 @@ public class Program
 		//These object will be used for every part of program
 		User Database = new User();
 		Product products = new Product();
+		Database.StreamDB();
 
 		//Create new product
 		products.Create("Pepsi",12 , "can", 250);
@@ -56,6 +57,8 @@ public class Program
 					//go to method Main from class Exchange
 					Exchange.Main(Database, products);
 					break;
+				case "0":
+					return;
 				default:
 					//Unknow index of menu
 					break;
