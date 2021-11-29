@@ -16,7 +16,7 @@ public class Program
 		warehouse.Add("Pepsi", 12, "can", 250);
 		warehouse.Add("Pepsi", 20, "can", 325);
 		warehouse.Add("Coke", 12, "can", 250);
-		warehouse.Add("Coke",20, "can", 325);
+		warehouse.Add("Coke", 20, "can", 325);
 		warehouse.Add("Sprite", 12, "can", 250);
 		warehouse.Add("Sprite", 20, "can", 325);
 		warehouse.Add("Fanta Grapes", 20, "can", 325);
