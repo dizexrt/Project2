@@ -211,9 +211,9 @@ namespace UserOptions
 				string confirm = Console.ReadLine();
 
 				//check condition of password
-				if (password.Length < 4) error = "***Password must be more than 4 character";
+				if (password != confirm) error = "***Password not match***";
 				else {
-					if (password != confirm) error = "***Password not match***";
+					if (password.Length < 4) error = "***Password must be more than 4 character";
 					else 
 					{
 						Password = password;
