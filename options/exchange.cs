@@ -10,6 +10,7 @@ namespace ExchangeProgram
 	{
 		public static void Main(Database user , Warehouse product)
 		{
+			bool error = false;
 			while (true)
 			{
 				//Clear screen and show navigation for user everytimes loop start
@@ -18,7 +19,9 @@ namespace ExchangeProgram
 				Console.WriteLine("1.Login");
 				Console.WriteLine("2.Register");
 				Console.WriteLine("0.return");
-				Console.WriteLine("When login or register you can type username as 0 to return.");
+				Console.WriteLine("> You can type username as 0 to return.");
+				if (error) Console.WriteLine("***Please enter only 0-2***");
+				error = false;
 				Console.Write("Select : ");
 				
 				//Switch string that user input
@@ -51,7 +54,9 @@ namespace ExchangeProgram
 						}
 						break;
 
-					default: break;
+					default: 
+						error = true;
+						break;
 				}
 			}
 		}
@@ -72,6 +77,7 @@ namespace ExchangeProgram
 		//main exchange program after logged in completed
 		private void Start()
 		{
+			bool error = false;
 			while (true)
 			{
 				//Clear screen and show navigation for user everytimes loop start
@@ -79,7 +85,10 @@ namespace ExchangeProgram
 				Console.WriteLine("Select options");
 				Console.WriteLine("1.Exchange product");
 				Console.WriteLine("2.Exchange money");
+				Console.WriteLine("3.Change password");
 				Console.WriteLine("0.return");
+				if (error) Console.WriteLine("***Please enter only 0-3***");
+				error = false;
 				Console.Write("Select : ");
 
 				//Switch menu index from input
@@ -97,9 +106,14 @@ namespace ExchangeProgram
 						GetMoney();
 						break;
 
+					case "3":
+						//go to ChangePassword
+						user.ChangePassword();
+						break;
+
 					default :
 						//Unknow index of menu
-						Console.WriteLine("Please enter only 1 or 2");
+						error = true;
 						break;
 				}
 			}
@@ -232,6 +246,7 @@ namespace ExchangeProgram
 						}
 					}
 				}
+				else Console.WriteLine("Product not found!!!");
 			}
       
 		}

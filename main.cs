@@ -32,6 +32,8 @@ public class Program
 		warehouse.Add("Mineral water", 10, "bottle", 600);
 		warehouse.Add("Mineral water", 22, "bottle", 1500);
 		
+		//catch error
+		bool error = false;
 		while(true)
 		{
 			//Clear screen and show navigation for user everytimes loop start
@@ -39,6 +41,8 @@ public class Program
 			Console.WriteLine("Welcome to Water Program");
 			Console.WriteLine("1. Dispenser");
 			Console.WriteLine("2. Exchange");
+			if (error) Console.WriteLine("***Select only 1 or 2***");
+			error = false;
 			Console.Write("Select : ");
 
 			//Switch menu index that input
@@ -56,6 +60,7 @@ public class Program
 					return;
 				default:
 					//Unknow index of menu
+					error = true;
 					break;
 			}
 		}

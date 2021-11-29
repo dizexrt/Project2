@@ -148,13 +148,28 @@ namespace UserOptions
 		private bool _stream;
 
 		//properties
-		public string Name {get => _name; set => _name = value; }
-		public string Password {get => _password; set => _password = value; }
-		public int Point { 
+		public string Name { get => _name; }
+
+		public string Password 
+		{ 
+			get => _password; 
+			set {
+				_password = value;
+				if(_stream)
+				{
+					User u = new User(_name, _password, _point, true);
+					StreamDB.Update(u);
+				}
+			} 
+		}
+
+		public int Point 
+		{ 
 			get => _point; 
 			set {
 				_point = value;
-				if (_stream){
+				if (_stream)
+				{
 					User u = new User(_name, _password, _point, true);
 					StreamDB.Update(u);
 				}
@@ -173,6 +188,42 @@ namespace UserOptions
 		public User(bool stream = false)
 		{
 			_stream = stream;
+		}
+
+		//change password
+		public bool ChangePassword()
+		{
+			string error = "none";
+			while (true)
+			{
+				Console.Clear();
+				Console.WriteLine("Change Password");
+				//Write error, if have it
+				if (error != "none") Console.WriteLine(error);
+
+				//Input new passeord
+				Console.Write("New password : ");
+				string password = Console.ReadLine();
+				//if want to return
+				if (password == "0") return false;
+				//confirm
+				Console.Write("Confirm password : ");
+				string confirm = Console.ReadLine();
+
+				//check condition of password
+				if (password.Length < 4) error = "***Password must be more than 4 character";
+				else {
+					if (password != confirm) error = "***Password not match***";
+					else 
+					{
+						Password = password;
+						Console.WriteLine("Password changed");
+						Console.Write("continue...");
+						Console.ReadLine();
+						return true;
+					}
+				}
+			}
 		}
 	}
 	
