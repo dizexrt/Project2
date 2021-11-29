@@ -13,12 +13,12 @@ public class Program
 		Database db = new Database(stream:true);
 
 		//Create new product
-		warehouse.Add("Pepsi",12 , "can", 250);
-		warehouse.Add("Pepsi",20, "can", 325);
-		warehouse.Add("Coke",12 , "can", 250);
+		warehouse.Add("Pepsi", 12, "can", 250);
+		warehouse.Add("Pepsi", 20, "can", 325);
+		warehouse.Add("Coke", 12, "can", 250);
 		warehouse.Add("Coke",20, "can", 325);
-        warehouse.Add("Sprite",12 , "can", 250);
-		warehouse.Add("Sprite",20, "can", 325);
+        warehouse.Add("Sprite", 12, "can", 250);
+		warehouse.Add("Sprite", 20, "can", 325);
 		warehouse.Add("Fanta Grapes", 20, "can", 325);
 		warehouse.Add("Fanta Orange", 20, "can", 325);
 		warehouse.Add("Fanta Berry", 20, "can", 325);		
