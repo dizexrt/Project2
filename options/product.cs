@@ -33,7 +33,7 @@ namespace ProductOptions
 			}
 		}
 
-		//Constrictors
+		//Constructors
 		public Product() {}
 		public Product(string name, int price, string type, int value)
 		{
