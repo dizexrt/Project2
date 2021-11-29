@@ -1,14 +1,14 @@
 using System;
 using ProductOptions;
-using ExchangeProgram;
+using UserOptions;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace ExchangeProgram
 {
 	public class Exchange
 	{
-		public static void Main(User user , Product product)
+		public static void Main(Database user , Warehouse product)
 		{
 			while (true)
 			{
@@ -20,64 +20,57 @@ namespace ExchangeProgram
 				Console.WriteLine("0.return");
 				Console.WriteLine("When login or register you can type username as 0 to return.");
 				Console.Write("Select : ");
-
-				//Input menu index as string
-				string Input = Console.ReadLine();
-
-				//switch menu idex that input
-				switch (Input)
+				
+				//Switch string that user input
+				switch (Console.ReadLine())
 				{
-					case "0":
-
-						//return to where call this method
-						return;
+					case "0": return; // return to where's called this method
 
 					case "1":
-
-						//go to login
-						string login = user.Login(); //return user name or fail
-
-						//if login not return fail
-						if(login != "fail")
+						
+						//Login from user in Database
+						if (user.Login())
 						{
-							//go to exchange program as user that logged in
-							User now = user.Get(login);
-							Exchange e = new Exchange(product);
-							e.Program(now);
-
-							//after finish process from exchange program return to where call this method
-							return;
+							Exchange program = new Exchange(product);
+							program.Usedby(user.Current);
+							return; // return to where's called this method
 						}
-
-						//if login return fail
 						break;
 
 					case "2":
-
-						//go to register
-						user.Register();
-						break;
-
-					default:
 						
-						//Unknow index of menu
+						if(user.Register())
+						{
+							Console.WriteLine("You want to Login?");
+							Console.WriteLine("> 0 to cancel | any to cofirm");
+							Console.Write("Confirm : ");
+
+							if (Console.ReadLine() != "0") goto case "1";
+
+							return; // return to where's called this method
+						}
 						break;
+
+					default: break;
 				}
 			}
 		}
 
 		//field 
-		private Product product;
+		private Warehouse product;
+		private User user;
 		
 		//constructor
-		public Exchange(Product product)
+		public Exchange(Warehouse product) { this.product = product; }
+
+		public void Usedby(User user)
 		{
-			//assign parameter product to field product
-			this.product = product;
+			this.user = user;
+			Start();
 		}
 
 		//main exchange program after logged in completed
-		public void Program(User user)
+		private void Start()
 		{
 			while (true)
 			{
@@ -89,31 +82,22 @@ namespace ExchangeProgram
 				Console.WriteLine("0.return");
 				Console.Write("Select : ");
 
-				//Input menu index as string
-				string Input = Console.ReadLine();
-
-				//Switch menu index
-				switch (Input)
+				//Switch menu index from input
+				switch (Console.ReadLine())
 				{
-					case "0":
-
-						//return to where call this method
-						return;
+					case "0": return; //return to where's called this method
 
 					case "1":
-
 						//go to GetPoint method
-						GetPoint(user);
+						GetPoint();
 						break;	
 
 					case "2":
-
 						//go to GetMoney method
-						GetMoney(user);
+						GetMoney();
 						break;
 
 					default :
-
 						//Unknow index of menu
 						Console.WriteLine("Please enter only 1 or 2");
 						break;
@@ -121,8 +105,7 @@ namespace ExchangeProgram
 			}
 		}
 
-		//get money from user that logged in
-		public void GetMoney (User user)
+		private void GetMoney ()
 		{
 			//Get money that user can exchange
 			int can_exchange = user.Point/50;
@@ -155,37 +138,28 @@ namespace ExchangeProgram
 					Console.WriteLine("=======================================");
 					Console.Write("Confirm : ");
 
-					//If user not type 0
-					if (Console.ReadLine() != "0")
-					{
-						//this mean confirm to go back
-						return;
-					}
-					else
-					{
-						//this mean cancel to go back and go to loop again
-						continue;
-					}
+					//Check to return
+					if (Console.ReadLine() != "0") return;
+					else continue;
 				}
 
 				//If amount of money that user input is not 0
-				int.TryParse(Input, out int money); //if user input string, money will be 0
-
-				//If user in put string
+				int.TryParse(Input, out int money); //string? index = 0:int;
+				//If user input string
 				if (money == 0)
 				{
 					Console.WriteLine("Money must be integer");
 					continue;
 				}
 				
-				//If user in put amount of money higher or lower of limit ( 0 to can_exchange )
+				//If user in put amount of money higher or lower of limit (0 - can_exchange)
 				if (money > can_exchange || money < 0)
 				{
-					Console.WriteLine("You can't exchange");	
+					Console.WriteLine("You can not exchange");	
 					continue;
 				}
 
-				//If amount of money not in condition before
+				//If amount of money not in condition before (pass all condition)
 				//Ask user to confirm amount of money that user input
 				Console.WriteLine("=======================================");
 				Console.WriteLine($"You want to get {money} Baht ? ");
@@ -194,22 +168,15 @@ namespace ExchangeProgram
 				Console.Write("Confirm : ");
 
 				//If user input 0, it means cancel
-				if (Console.ReadLine() == "0")
-				{
-					continue;
-				}
-				
-				//if not cancel
+				if (Console.ReadLine() == "0") continue; 
 				else
 				{
 					//show details and get money
 					Console.WriteLine("=======================================");
 					Console.WriteLine($"You get money : {money} Baht");
 					user.Point -= money*50; //remove point thta exchanged
-					Database.Update(user);
 					Console.WriteLine($"You have {user.Point} point left"); //show point left
 					Console.WriteLine("=======================================");
-
 					//wait to confirm to continue
 					Console.Write("continue...");
 					Console.ReadLine();
@@ -218,13 +185,12 @@ namespace ExchangeProgram
 			}
 		}
 
-		//get point from user that logged in
-		public void GetPoint (User user)
+		private void GetPoint ()
 		{
 			//clear screen and show product details
 			Console.Clear();
 			Console.WriteLine("====================MENU======================");
-			product.Exchange(); //show each product from field product
+			product.Show(sell:false); //show each product from field product
 			Console.WriteLine("==============================================");
 			Console.WriteLine("Type 0 to return"); //navigation for return
 
@@ -236,26 +202,15 @@ namespace ExchangeProgram
             	string Input = Console.ReadLine();
 
 				//When user input 0 it means stop exchange
-				if (Input == "0")
-				{
-					//return to where call this method
-					return;
-				}
+				if (Input == "0") return; 
 
 				//When data that user input is not 0 convert Input(string) to int
 				int.TryParse(Input, out int index); //if convert fail, it will return 0
 
-				//get point of product index from GetPoint method from class Product
-				int point = product.GetPoint(index); //not found return 0
+				//get point of product
+				bool found = product.Get(index, out Product p); 
 
-				//If product not found
-				if (point == 0)
-				{
-					Console.WriteLine("Product not match!!!");
-					continue;
-				}
-
-				else
+				if(found)
 				{
 					while (true)
 					{
@@ -271,8 +226,7 @@ namespace ExchangeProgram
 						else 
 						{
 							//add point after confirmed amount of product
-							user.Point += n*point;
-							Database.Update(user);
+							user.Point += n*p.Point;
 							Console.WriteLine($"Now your point is {user.Point}");
 							break;
 						}
@@ -280,279 +234,6 @@ namespace ExchangeProgram
 				}
 			}
       
-		}
-	}
-
-	public class User
-	{
-		//fields
-		private User[] database = {};
-		private string _name;
-		private string _password;
-		private int _point = 0;
-
-		//properties
-		public string Name { get => _name; set => _name = value; }
-		public string Password { get => _password; set => _password = value; }
-		public int Point { get => _point; set => _point = value; }
-
-		public string Login()
-		{
-			//declare string to catch error
-			string error = "none";
-
-			while(true)
-			{
-				Console.Clear();
-				Console.WriteLine("Login");
-
-				//show error if have it
-				if (error != "none")
-				{
-					Console.WriteLine(error);
-				}
-
-				//get username
-				Console.Write("Username : ");
-				string username = Console.ReadLine();
-
-				//if username is 0 return to where call this method
-				if (username == "0")
-				{
-					return "fail";
-				}
-
-				//if username is not 0 get password
-				Console.Write("Password : ");
-				string password = Console.ReadLine();
-
-				//check username in field database
-				if (Check(username) == true) //if found
-				{
-					User login = Get(username); //get user in field database form username
-
-					if(password != login.Password) //check password
-					{
-						error = "**Incorrect Password**"; //Incorrect
-					}
-
-					else
-					{
-						Console.WriteLine("Login completed!"); //correct
-						return username; 
-					}
-				}
-				else //if not found
-				{
-					error = "**Username not found**";
-				}
-			}
-		}
-
-		//Check username in database
-		public bool Check(string name)
-		{
-			foreach (User u in this.database)
-			{
-				if (u.Name == name) //if found
-				{
-					return true;
-				}
-			}
-
-			return false; //not found
-		}
-
-		//get user from username
-		public User Get(string name)
-		{
-			//loop to check user in field database
-			foreach (User user in this.database)
-			{
-				if (user.Name == name) //if found
-				{
-					return user;
-				}
-			}
-
-			//not found user in field database
-			return new User();
-		}
-		
-		//create new user
-		public bool Register()
-		{
-			//declare string to catch error
-			string error = "none";
-
-			while(true)
-			{
-				Console.Clear();
-				Console.WriteLine("Register");
-
-				//show error if have it
-				if (error != "none")
-				{
-					Console.WriteLine(error);
-				}
-
-				//get username
-				Console.Write("Username : ");
-				string username = Console.ReadLine();
-
-				//if username is 0 return to where call this method
-				if (username == "0")
-				{
-					return false;
-				}
-
-				//get password and confirm password
-				Console.Write("Password : ");
-				string password = Console.ReadLine();
-				Console.Write("Confirm Password : ");
-				string confirm = Console.ReadLine();
-
-				//check username is already in database
-				if(Check(username) == true)
-				{
-					error = "**This username is already in used**"; //username is already in used
-				}
-
-				//username is not in used
-				else 
-				{
-					//password not match
-					if (password != confirm) 
-					{
-						error = "**Password does not match**"; 
-					}
-
-					//password is too short
-					else if (password.Length < 4)
-					{
-						error = "Password must be at least 4 character"; 
-					}
-					
-					//pass all conditions
-					else
-					{
-						Console.WriteLine("Register completed!");
-
-						//create new user
-						User new_user = new User();
-						new_user.Name = username;
-						new_user.Password = password;
-
-						//add new user to database
-						AddTodatabase(new_user);
-						return true;
-					}
-				}
-			}
-		}
-
-		//add new user to database
-		private void AddTodatabase(User new_user)
-		{
-			int Length = this.database.Length; //get length of database
-			int index = Length-1; //get last index of database
-
-			//create new array type User that increase size from database by 1 
-			User[] newarr = new User[Length+1];
-
-			//add every data from database to new array, and last index of new array is null
-			for (int i = 0; i < Length; i++)
-			{
-				newarr[i] = this.database[i];
-			}
-
-			//add new User to last index of new array
-			newarr[index+1] = new_user;
-
-			//apply new array to database
-			this.database = newarr;
-
-			//add new user to real db
-			Database.Add(new_user);
-		}
-
-		public void StreamDB()
-		{
-			this.database = Database.Import();
-		}
-
-	}
-}
-
-public class Database
-{
-
-	public static void Add(User user)
-	{
-		using StreamWriter db = new (@"Database/database.txt", append:true);
-		string[] UserInformation = {user.Name, user.Password, user.Point.ToString()};
-		string data = String.Join("/", UserInformation);
-		db.WriteLine(data);
-	}
-
-	public static User[] Import()
-	{
-		int line = 0;
-		foreach (string data in File.ReadLines(@"Database/database.txt"))
-		{
-			line ++;
-		}
-
-		User[] db = new User[line];
-
-		line = 0;
-		foreach (string data in File.ReadLines(@"Database/database.txt"))
-		{
-			string[] Info = data.Split("/");
-			
-			User user = new User();
-			user.Name = Info[0];
-			user.Password = Info[1];
-			user.Point = int.Parse(Info[2]);
-
-			db[line] = user;
-			line++;
-		}
-
-		if (db.Length == 0) return new User[0];
-
-		return db;
-	}
-
-	public static void Update(User user)
-	{
-		File.WriteAllText(@"Database/update.txt", String.Empty);
-		using StreamWriter update = new (@"Database/update.txt");
-
-		foreach (string data in File.ReadLines(@"Database/database.txt"))
-		{
-			if (data.StartsWith(user.Name+"/"))
-			{
-				string[] Info = {user.Name, user.Password, user.Point.ToString()};
-				string updatedata = String.Join("/", Info);
-				update.WriteLine(updatedata);
-				continue;
-			}
-
-			update.WriteLine(data);
-		}
-
-		Task.Run (() => Update());
-	}
-
-	public static async Task Update()
-	{
-		await File.WriteAllTextAsync(@"Database/database.txt", String.Empty);
-		using StreamWriter db = new (@"Database/database.txt");
-
-		foreach (string data in File.ReadLines(@"Database/update.txt"))
-		{
-			await db.WriteLineAsync(data);
 		}
 	}
 

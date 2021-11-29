@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/runner/Project-1/main.csproj": {}
+    "/home/runner/Project/main.csproj": {}
   },
   "projects": {
-    "/home/runner/Project-1/main.csproj": {
+    "/home/runner/Project/main.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/runner/Project-1/main.csproj",
+        "projectUniqueName": "/home/runner/Project/main.csproj",
         "projectName": "main",
-        "projectPath": "/home/runner/Project-1/main.csproj",
+        "projectPath": "/home/runner/Project/main.csproj",
         "packagesPath": "/home/runner/.nuget/packages/",
-        "outputPath": "/home/runner/Project-1/obj/",
+        "outputPath": "/home/runner/Project/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/runner/.nuget/NuGet/NuGet.Config"

@@ -2,38 +2,36 @@ using System;
 using ExchangeProgram;
 using DispenserProgram;
 using ProductOptions;
+using UserOptions;
 
 public class Program
 {
 	public static void Main()
 	{
-		//Create instance of User and Product
 		//These object will be used for every part of program
-		User Database = new User();
-		Product products = new Product();
-		Database.StreamDB();
+		Warehouse warehouse = new Warehouse();
+		Database db = new Database(stream:true);
 
 		//Create new product
-		products.Create("Pepsi",12 , "can", 250);
-		products.Create("Pepsi",20, "can", 325);
-		products.Create("Coke",12 , "can", 250);
-		products.Create("Coke",20, "can", 325);
-        products.Create("Sprite",12 , "can", 250);
-		products.Create("Sprite",20, "can", 325);
-		products.Create("Fanta Grapes", 20, "can", 325);
-		products.Create("Fanta Orange", 20, "can", 325);
-		products.Create("Fanta Berry", 20, "can", 325);		
-		products.Create("Soda", 20, "can", 325);
-		products.Create("Orange juice", 20, "bottle", 335);
-		products.Create("Lemonade", 18, "bottle", 335);
-		products.Create("Apple juice", 15, "bottle", 335);
-		products.Create("Tomato juice", 15, "bottle", 335);
-		products.Create("Drinking water", 7, "bottle", 600);
-		products.Create("Drinking water", 14, "bottle", 1500);
-		products.Create("Mineral water", 10, "bottle", 600);
-		products.Create("Mineral water", 22, "bottle", 1500);
+		warehouse.Add("Pepsi",12 , "can", 250);
+		warehouse.Add("Pepsi",20, "can", 325);
+		warehouse.Add("Coke",12 , "can", 250);
+		warehouse.Add("Coke",20, "can", 325);
+        warehouse.Add("Sprite",12 , "can", 250);
+		warehouse.Add("Sprite",20, "can", 325);
+		warehouse.Add("Fanta Grapes", 20, "can", 325);
+		warehouse.Add("Fanta Orange", 20, "can", 325);
+		warehouse.Add("Fanta Berry", 20, "can", 325);		
+		warehouse.Add("Soda", 20, "can", 325);
+		warehouse.Add("Orange juice", 20, "bottle", 335);
+		warehouse.Add("Lemonade", 18, "bottle", 335);
+		warehouse.Add("Apple juice", 15, "bottle", 335);
+		warehouse.Add("Tomato juice", 15, "bottle", 335);
+		warehouse.Add("Drinking water", 7, "bottle", 600);
+		warehouse.Add("Drinking water", 14, "bottle", 1500);
+		warehouse.Add("Mineral water", 10, "bottle", 600);
+		warehouse.Add("Mineral water", 22, "bottle", 1500);
 		
-		//loop for main program when run
 		while(true)
 		{
 			//Clear screen and show navigation for user everytimes loop start
@@ -43,19 +41,16 @@ public class Program
 			Console.WriteLine("2. Exchange");
 			Console.Write("Select : ");
 
-			//Input menu index as string
-			string Input = Console.ReadLine();
-
 			//Switch menu index that input
-			switch (Input)
+			switch (Console.ReadLine())
 			{
 				case "1":
 					//go to method Main from class Dispenser
-					Dispenser.Main(products);
+					Dispenser.Main(warehouse);
 					break;
 				case "2":
 					//go to method Main from class Exchange
-					Exchange.Main(Database, products);
+					Exchange.Main(db, warehouse);
 					break;
 				case "0":
 					return;

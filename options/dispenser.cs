@@ -5,12 +5,12 @@ namespace DispenserProgram
 {
 	public class Dispenser
 	{
-		public static void Main(Product product)
+		public static void Main(Warehouse product)
 		{
 			//Show product menu
 			Console.Clear();
 			Console.WriteLine("====================MENU======================");
-			product.Sell();
+			product.Show(sell:true);
 			Console.WriteLine("==============================================");
 			Console.WriteLine("*Type 0 to return*");
 			
@@ -28,30 +28,19 @@ namespace DispenserProgram
 					Console.WriteLine("Are you sure to return?");
 					Console.WriteLine("> Enter to return | 0 to cancel");
 					Console.Write("Confirm : ");
-					
 					//check Confirm
-					if (Console.ReadLine() == "0")
-					{
-						continue;
-					}
-
+					if (Console.ReadLine() == "0") continue;
 					return; //return to where that call this method
 				}
 
-				//If user do not input 0
+				//If user does not input 0
 				int.TryParse(Input, out int index); //convert string to int index
 
-				//If index in range of product
-				if (index <= product.Length && index > 0)
+				if (product.Get(index, out Product p))
 				{
-					Product selected = product.Get(index); //Get product from index
-					if (Buy(selected) == false) //go to Buy method
-					{
-						continue;
-					}
-					return;
+					if (Buy(p)) return;
+					continue;
 				}
-				//If index not in range of product
 				else
 				{
 					Console.WriteLine("...Program not found!!!");

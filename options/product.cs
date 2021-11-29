@@ -11,18 +11,14 @@ namespace ProductOptions
 		private string _type;
 		private int _value;
 		private int _point;
-		private Product[] warehouse = {};
 
 		//Properties that can get and set
 		public string Name { get => _name; set => _name = value; }
 		public int Price { get => _price; set => _price = value; }
 		public string Type 	{get=> _type; set => _type = value;}
 		public int Value {get=> _value; set=> _value = value;}
-		
-		//Property that can get only
-		public int Length {get => warehouse.Length; }
 		public int Point {
-			//check type of product and value to return point
+			//check type and value to return point
 			get {
 				if (Type == "bottle")
 				{
@@ -37,113 +33,86 @@ namespace ProductOptions
 			}
 		}
 
-		//You must pass parameter as real index (start from 0) plus by 1 when call this method
-		//This method will get point from product in field warehouse (array)
-		public int GetPoint(int i)
+		//Constrictors
+		public Product() {}
+		public Product(string name, int price, string type, int value)
 		{
-			//If index start from 1 to last index of field warehouse plus by 1 (length)
-			if (i > 0 && i <= warehouse.Length)
-			{
-				//Return point of product from real index (start from 0) in field warehouse
-				return warehouse[i-1].Point;
-			}
-
-			//index of product is not in range
-			else
-			{
-				return 0;
-			}
+			Name = name;
+			Price = price;
+			Type = type;
+			Value = value;
 		}
+	}
 
-		//Get product from index
-		public Product Get(int index)
-		{
-			if (index <= Length && index > 0)
-			{
-				return warehouse[index-1];
-			}
-			else 
-			{
-				return new Product();
-			}
-		}
+	
+
+	public class Warehouse
+	{
+		//Fields 
+		private Product[] _data = {};
+
+		//Properties
+		public int Length { get => _data.Length; }
 
 		//Craete new product 
-		public void Create(string n, int p, string t, int v)
+		public void Add(string n, int p, string t, int v)
 		{
-			//Create new Product (instance of product)
-			Product product = new Product();
-
-			//Assign value to property of new Product
-			product.Name = n;
-			product.Price = p;
-			product.Type = t;
-			product.Value = v;
-
-			//Pack new Product to field warehouse
+			//Create new Product
+			Product product = new Product(n, p, t, v);
+			//Pack new Product to data
 			Pack(product);
 		}
 
-		//add new object of class Product to field warehouse
-		private void Pack(Product p)
+		//Craete new product 
+		public void Add(Product p)
 		{
-			int Length = this.warehouse.Length; //get length of warehouse
-			int index = Length-1; //get last index of warehouse
+			Pack(p);
+		}
 
-			//create new array type Product that increase size from warehouse by 1 
-			Product[] newarr = new Product[Length+1];
+		//Get product from index
+		public bool Get(int i, out Product p)
+		{
+			if (i <= Length && i > 0) {
+				p = _data[--i];
+				return true;
+			}
 
-			//add every data from warehouse to new array, and last index of new array is null
+			p = new Product();
+			return false;
+		}
+
+		//Show product
+		public void Show(bool sell = true)
+		{
+			//loop each product in data
 			for (int i = 0; i < Length; i++)
 			{
-				newarr[i] = this.warehouse[i];
-			}
-
-			//add new product to last index of new array
-			newarr[index+1] = p;
-
-			//apply new array to warehouse
-			this.warehouse = newarr;
-		}
-
-		//Show product in sell form
-		public void Sell()
-		{
-			//loop each product in field warehouse
-			for (int i = 0; i < warehouse.Length; i++)
-			{
-				Product p = warehouse[i];
-
-				//format string to show details of product 
-				string output = (i+1).ToString().PadRight(4);
-				output += p.Name.PadRight(15);
-				output += p.Type.PadRight(8);
-				output += p.Value.ToString().PadRight(5) + "mL".PadRight(5);
-				output += p.Price.ToString().PadRight(5) + "Baht";
-
-				//print string that formatted
-				Console.WriteLine(output);
-			}
-		}
-
-		//Show product in exchange form
-		public void Exchange()
-		{
-			//loop each product in field warehouse
-			for (int i = 0; i < warehouse.Length; i++)
-			{
-				Product p = warehouse[i];
-
+				Product p = _data[i];
 				//format string to show details of product
 				string output = (i+1).ToString().PadRight(4);
 				output += p.Name.PadRight(15);
 				output += p.Type.PadRight(8);
 				output += p.Value.ToString().PadRight(5) + "mL".PadRight(5);
-				output += p.Point.ToString().PadRight(5) + "point";
-
+				output += (sell)? (p.Price.ToString().PadRight(5) + "Baht"):(p.Point.ToString().PadRight(5) + "point");
 				//print string that formatted
 				Console.WriteLine(output);
 			}
+		}
+
+		//add new object of class Product to field warehouse
+		private void Pack(Product p)
+		{
+			//create new array
+			Product[] newarr = new Product[Length+1];
+
+			//add every Product from _data to new array
+			for (int i = 0; i < Length; i++)
+			{
+				newarr[i] = _data[i];
+			}
+			newarr[Length] = p; //Add new user ass last index
+
+			_data = newarr; //Apply new array to _data
 		}
 	}
 }
