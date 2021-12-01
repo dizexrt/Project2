@@ -41,7 +41,7 @@ public class Program
 			Console.WriteLine("Welcome to Water Program");
 			Console.WriteLine("1. Dispenser");
 			Console.WriteLine("2. Exchange");
-			if (error) Console.WriteLine("***Select only 1 or 2***");
+			if (error) Console.WriteLine("***Select only 1 or 2***"); 
 			error = false;
 			Console.Write("Select : ");
 

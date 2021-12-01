@@ -1,8 +1,6 @@
 using System;
 using ProductOptions;
 using UserOptions;
-using System.IO;
-using System.Linq;
 
 namespace ExchangeProgram
 {
@@ -19,7 +17,6 @@ namespace ExchangeProgram
 				Console.WriteLine("1.Login");
 				Console.WriteLine("2.Register");
 				Console.WriteLine("0.return");
-				Console.WriteLine("> You can type username as 0 to return.");
 				if (error) Console.WriteLine("***Please enter only 0-2***");
 				error = false;
 				Console.Write("Select : ");
@@ -32,10 +29,10 @@ namespace ExchangeProgram
 					case "1":
 						
 						//Login from user in Database
-						if (user.Login())
+						if (user.Login(out User login))
 						{
 							Exchange program = new Exchange(product);
-							program.Usedby(user.Current);
+							program.Usedby(login);
 							return; // return to where's called this method
 						}
 						break;
@@ -154,13 +151,13 @@ namespace ExchangeProgram
 
 					//Check to return
 					if (Console.ReadLine() != "0") return;
-					else continue;
+					continue;
 				}
 
 				//If amount of money that user input is not 0
-				int.TryParse(Input, out int money); //string? index = 0:int;
-				//If user input string
-				if (money == 0)
+				bool convert = int.TryParse(Input, out int money); 
+
+				if (convert == false)
 				{
 					Console.WriteLine("Money must be integer");
 					continue;
@@ -183,19 +180,17 @@ namespace ExchangeProgram
 
 				//If user input 0, it means cancel
 				if (Console.ReadLine() == "0") continue; 
-				else
-				{
-					//show details and get money
-					Console.WriteLine("=======================================");
-					Console.WriteLine($"You get money : {money} Baht");
-					user.Point -= money*50; //remove point thta exchanged
-					Console.WriteLine($"You have {user.Point} point left"); //show point left
-					Console.WriteLine("=======================================");
-					//wait to confirm to continue
-					Console.Write("continue...");
-					Console.ReadLine();
-					break;
-				}
+				
+				//show details and get money
+				Console.WriteLine("=======================================");
+				Console.WriteLine($"You get money : {money} Baht");
+				user.Point -= money*50; //remove point thta exchanged
+				Console.WriteLine($"You have {user.Point} point left"); //show point left
+				Console.WriteLine("=======================================");
+				//wait to confirm to continue
+				Console.Write("continue...");
+				Console.ReadLine();
+				break;
 			}
 		}
 
@@ -236,14 +231,13 @@ namespace ExchangeProgram
 						if (n <= 0)
 						{
 							Console.WriteLine("Amount of product must be more than 0");
+							continue;
 						}
-						else 
-						{
-							//add point after confirmed amount of product
-							user.Point += n*p.Point;
-							Console.WriteLine($"Now your point is {user.Point}");
-							break;
-						}
+
+						//add point after confirmed amount of product
+						user.Point += n*p.Point;
+						Console.WriteLine($"Now your point is {user.Point}");
+						break;
 					}
 				}
 				else Console.WriteLine("Product not found!!!");

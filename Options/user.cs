@@ -9,15 +9,13 @@ namespace UserOptions
 	{
 		//fields
 		private User[] userdata = {};
-		private User login;
 		private bool stream_db;
 
 		//properties
-		public User Current { get => login; }
 		public int Length { get => userdata.Length; }
 		public bool Stream { get => stream_db; }
 
-		//Using userdata from StreamDB
+		//Constructor
 		public Database(bool stream = false)
 		{
 			if (stream)	userdata = StreamDB.Import();
@@ -46,16 +44,21 @@ namespace UserOptions
 		}
 
 		//getting user in userdata by username
-		public User Get(string username)
+		public bool Get(string username, out User u)
 		{
 			foreach (User user in userdata)
 			{
-				if (user.Name == username) return user;
+				if (user.Name == username) 
+				{
+					u = user;
+					return true;
+				}
 			}
-			return new User();
+			u = new User();
+			return false;
 		}
 
-		public bool Login()
+		public bool Login(out User log)
 		{
 			//declare string to catch error
 			string error = "none";
@@ -64,26 +67,30 @@ namespace UserOptions
 			{
 				Console.Clear();
 				Console.WriteLine("Login");
+				Console.WriteLine("> You can type username as 0 to return.");
 				//show error if have it
 				if (error != "none") Console.WriteLine(error);
 
 				//get username and check it is 0?
 				Console.Write("Username : ");
 				string username = Console.ReadLine();
-				if (username == "0") return false;
+				if (username == "0") 
+				{
+					log = new User();
+					return false;
+				}
 
 				//if username is not 0 get password
 				Console.Write("Password : ");
 				string password = Console.ReadLine();
 
 				//check username
-				if (Found(username))
+				if (Get(username, out User login))
 				{
-					login = Get(username);
-
 					if(password != login.Password) error = "**Incorrect Password**";
 					else {
 						Console.WriteLine("Login completed!");
+						log = login;
 						return true; 
 					}
 				}
@@ -101,6 +108,7 @@ namespace UserOptions
 			{
 				Console.Clear();
 				Console.WriteLine("Register");
+				Console.WriteLine("> You can type username as 0 to return.");
 				//show error, if have it
 				if (error != "none") Console.WriteLine(error);
 
@@ -128,8 +136,7 @@ namespace UserOptions
 					{
 						Console.WriteLine("Register completed!");
 						//create new user and add to userdata
-						bool s = (Stream) ? true:false;
-						User u = new User(username, password, stream:s);
+						User u = new User(username, password, stream:Stream);
 						AddUser(u);
 						return true;
 					}
@@ -149,10 +156,9 @@ namespace UserOptions
 
 		//properties
 		public string Name { get => _name; }
-
 		public string Password 
-		{ 
-			get => _password; 
+		{
+			get => _password;
 			set {
 				_password = value;
 				if(_stream)
@@ -160,11 +166,11 @@ namespace UserOptions
 					User u = new User(_name, _password, _point, true);
 					StreamDB.Update(u);
 				}
-			} 
+			}
 		}
 
 		public int Point 
-		{ 
+		{
 			get => _point; 
 			set {
 				_point = value;
